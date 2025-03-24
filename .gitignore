@@ -1,0 +1,3 @@
+langvenv
+.env
+vertex_ai_use_cred.json
