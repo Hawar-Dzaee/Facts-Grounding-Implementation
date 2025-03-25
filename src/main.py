@@ -35,15 +35,15 @@ evaluation_prompts_file_path = "../data/evaluation_prompts.csv"
 
 test_models = [
     "openai:gpt-3.5-turbo",
-    "openai:gpt-4o",
+    # "openai:gpt-4o",
     # "anthropic:claude-3-5-sonnet-20240620",
    #  "google:gemini-1.5-pro",
     ]
 
 judge_models = [
-    # "openai:gpt-4o",
-    "anthropic:claude-3-5-sonnet-20240620",
-    "google:gemini-1.5-pro",
+    "openai:gpt-4o",
+    # "anthropic:claude-3-5-sonnet-20240620",
+    # "google:gemini-1.5-pro",
     ]
 
 
