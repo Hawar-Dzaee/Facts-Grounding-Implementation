@@ -22,6 +22,14 @@ os.environ['LANGSMITH_API_KEY'] = os.getenv("LANGSMITH_API_KEY")
 os.environ['LANGSMITH_PROJECT'] = os.getenv("LANGSMITH_PROJECT")
 os.environ['LANGSMITH_TRACING_V2'] = "true"
 
+with open("models.yaml","r") as f:
+    models = yaml.safe_load(f)
+
+test_models = models['TEST_MODELS']
+judge_models = models['JUDGE_MODELS']
+
+print(test_models)
+print(judge_models)
 
 
 #-------------------------------------------------------------------------
@@ -33,20 +41,6 @@ df = pd.read_csv("../data/examples.csv")
 df = df[:LIMIT_SAMPLE_SIZE]
 
 evaluation_prompts_file_path = "../data/evaluation_prompts.csv"
-
-
-test_models = [
-    "openai:gpt-3.5-turbo",
-    "openai:gpt-4o",
-    # "anthropic:claude-3-5-sonnet-20240620",
-   #  "google:gemini-1.5-pro",
-    ]
-
-judge_models = [
-    # "openai:gpt-4o",
-    "anthropic:claude-3-5-sonnet-20240620",
-    "google_vertexai:gemini-1.5-pro",
-    ]
 
 
 

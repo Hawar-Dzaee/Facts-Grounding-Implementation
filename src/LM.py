@@ -19,7 +19,6 @@ class LM:
         assert ":" in model, "All models must be in format 'provider:version'"
         self.model_provider,self.model_version = self.model.split(":")
 
-        
 
     def call_lm(self,text:str,intention:str,temperature=0.0,**kwargs):
         logger.info(f"Calling : {self.model} | Intention : {intention} ...") 

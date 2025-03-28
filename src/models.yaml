@@ -1,0 +1,10 @@
+TEST_MODELS:
+  - openai:gpt-3.5-turbo
+  - openai:gpt-4o
+  # ADD YOUR MODELS HERE
+
+JUDGE_MODELS:
+  - anthropic:claude-3-5-sonnet-20240620
+  - google_vertexai:gemini-1.5-pro
+  # ADD MORE JUDGE MODELS HERE
+
