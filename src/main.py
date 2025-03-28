@@ -11,19 +11,21 @@ from utils import (
     dump_in_jsonl
 )
 
+from dotenv import load_dotenv
+load_dotenv()
+
 os.environ['GOOGLE_PROJECT_ID'] = os.getenv("GOOGLE_PROJECT_ID")
 os.environ['GOOGLE_REGION'] = os.getenv("GOOGLE_REGION")
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../vertex_ai_use_cred.json"
 
-from dotenv import load_dotenv
-load_dotenv()
-#-------------------------------------------------------------------------
-with open('logging_config.yaml','r') as file: 
-   config = yaml.safe_load(file)
-   logging.config.dictConfig(config)
+os.environ['LANGSMITH_API_KEY'] = os.getenv("LANGSMITH_API_KEY")
+os.environ['LANGSMITH_PROJECT'] = os.getenv("LANGSMITH_PROJECT")
+os.environ['LANGSMITH_TRACING_V2'] = "true"
 
-logger = logging.getLogger("Logger")
-response_logger= logging.getLogger("Response Logger")
+
+
+#-------------------------------------------------------------------------
+logger = logging.getLogger(__name__)
 #-------------------------------------------------------------------------
 LIMIT_SAMPLE_SIZE = 2
 
@@ -35,21 +37,16 @@ evaluation_prompts_file_path = "../data/evaluation_prompts.csv"
 
 test_models = [
     "openai:gpt-3.5-turbo",
-    # "openai:gpt-4o",
+    "openai:gpt-4o",
     # "anthropic:claude-3-5-sonnet-20240620",
    #  "google:gemini-1.5-pro",
     ]
 
 judge_models = [
-    "openai:gpt-4o",
-    # "anthropic:claude-3-5-sonnet-20240620",
-    # "google:gemini-1.5-pro",
+    # "openai:gpt-4o",
+    "anthropic:claude-3-5-sonnet-20240620",
+    "google_vertexai:gemini-1.5-pro",
     ]
-
-
-assert all([":" in i for i in test_models]) 
-assert all([":" in i for i in judge_models]) 
-
 
 
 
@@ -65,7 +62,7 @@ for index,row in df.iterrows():
         test_model_output  = model_instance.call_lm(row['full_prompt'],"test",sample_id = index)
         test_responses.append(test_model_output)
         dump_in_jsonl(test_model_output,"test_responses.jsonl")
-        response_logger.info(f"Test Model : {test_model} | Test Response : \n\n {test_model_output['test model response']}\n\n")
+
         # STEP 2 : JUDGE RESPONSE 
         for j in judge_models:
             judge_model = JudgeLM(j)
@@ -90,4 +87,3 @@ for index,row in df.iterrows():
             judge_response['verdict'] = verdict
             judge_responses.append(judge_response)
             dump_in_jsonl(judge_response,"judge_responses.jsonl")
-            response_logger.info(f"Judge Model : {j} | judged Model : {test_model} \n\n {judge_response['judge model response']}\n\n")

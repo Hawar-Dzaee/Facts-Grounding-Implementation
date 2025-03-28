@@ -41,8 +41,6 @@ class LM:
                     f'{intention} model provider':self.model_provider,
                     f'{intention} model version':self.model_version,
                     f'Encountered Problems':True,
-                    f'{intention} model input token count':None,
-                    f'{intention} model output token count':None,
                     f'{intention} model response':str(e)
                 }
             
