@@ -1,4 +1,5 @@
 langvenv
 .env
 vertex_ai_use_cred.json
-src/__pycache__
+*/__pycache__
+.pytest_cache

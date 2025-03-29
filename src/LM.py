@@ -2,7 +2,6 @@
 import logging
 import json
 import pandas as pd
-# from google.generativeai import GenerativeModel as genai
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
