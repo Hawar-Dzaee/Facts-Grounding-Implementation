@@ -1,6 +1,7 @@
 
 import logging
 import json
+from typing import List
 import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
@@ -10,8 +11,7 @@ logger = logging.getLogger(__name__)
 from langchain.chat_models import init_chat_model
 
 
-
-class LM:
+class LLM:
 
     def __init__(self,model:str):
         self.model = model
@@ -19,8 +19,8 @@ class LM:
         self.model_provider,self.model_version = self.model.split(":")
 
 
-    def call_lm(self,text:str,intention:str,temperature=0.0,**kwargs):
-        logger.info(f"Calling : {self.model} | Intention : {intention} ...") 
+    def call_llm(self,text:str,intention:str,temperature=0.0,**kwargs):
+        logger.debug(f"Calling : {self.model} | Intention : {intention} ...") 
         try:
             response = init_chat_model(model=self.model,temperature=temperature)
             response = response.invoke(text)
@@ -42,19 +42,20 @@ class LM:
                     f'{intention} model response':str(e)
                 }
             
-        result.update(kwargs)
-        return result
+        kwargs.update(result)
+        return kwargs
 
 
     
 
-class JudgeLM(LM):
+class JudgeLLM(LLM):
     def __init__(self,model:str,evaluation_method:str=None):
         super().__init__(model)
         self.evaluation_method = evaluation_method
 
         if self.evaluation_method is None:
             self.evaluation_method = "implicit_span_level"  if self.model_provider == "anthropic" else 'json'
+
 
 
     def fetch_evaluation_prompt(self,evaluation_prompt_file_path:str):
@@ -64,8 +65,6 @@ class JudgeLM(LM):
     
 
     def get_verdict(self,raw_output:str):
-        logger.info(f"Getting verdict for : {self.model} | Evaluation Method : {self.evaluation_method}...")
-
         try : 
             if self.evaluation_method == 'json':
                 processed_output = raw_output.strip("```json").strip()
@@ -79,7 +78,7 @@ class JudgeLM(LM):
             else :
                 if "Final Answer" in raw_output: 
                     verdict = raw_output.split("Final Answer: ")[1]
-            logger.info(f"Successfully got verdict for : {self.model} | Evaluation Method : {self.evaluation_method}.")
+            logger.info(f"{self.model} | {self.evaluation_method} | {verdict}")
             return verdict
         
         except Exception as e:

@@ -5,7 +5,7 @@ import yaml
 
 import pandas as pd 
 
-from LM import LM,JudgeLM
+from LM import LLM,JudgeLLM
 from utils import (
     fill_out_prompt,
     dump_in_jsonl
@@ -27,11 +27,6 @@ with open("models.yaml","r") as f:
 
 test_models = models['TEST_MODELS']
 judge_models = models['JUDGE_MODELS']
-
-print(test_models)
-print(judge_models)
-
-
 #-------------------------------------------------------------------------
 logger = logging.getLogger(__name__)
 #-------------------------------------------------------------------------
@@ -52,14 +47,14 @@ for index,row in df.iterrows():
 
     # STEP 1 : TEST RESPONSE 
     for test_model in test_models:
-        model_instance = LM(test_model)
-        test_model_output  = model_instance.call_lm(row['full_prompt'],"test",sample_id = index)
+        model_instance = LLM(test_model)
+        test_model_output  = model_instance.call_llm(row['full_prompt'],"test",sample_id = index)
         test_responses.append(test_model_output)
         dump_in_jsonl(test_model_output,"test_responses.jsonl")
 
         # STEP 2 : JUDGE RESPONSE 
         for j in judge_models:
-            judge_model = JudgeLM(j)
+            judge_model = JudgeLLM(j)
             judge_template = judge_model.fetch_evaluation_prompt(evaluation_prompts_file_path)
 
             # FILL OUT JUDGE TEMPLATE    
@@ -71,7 +66,7 @@ for index,row in df.iterrows():
             )
 
             # CALL JUDGE MODEL 
-            judge_response = judge_model.call_lm(
+            judge_response = judge_model.call_llm(
             filled_template,
             intention = "judge",
             judgeded_model = test_model,
