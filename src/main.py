@@ -1,36 +1,35 @@
-import os 
+
 import logging
-import logging.config
 import yaml
 
 import pandas as pd 
 
 from LM import LLM,JudgeLLM
 from utils import (
+    load_environment,
     fill_out_prompt,
     dump_in_jsonl
 )
 
-from dotenv import load_dotenv
-load_dotenv()
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
-os.environ['GOOGLE_PROJECT_ID'] = os.getenv("GOOGLE_PROJECT_ID")
-os.environ['GOOGLE_REGION'] = os.getenv("GOOGLE_REGION")
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../vertex_ai_use_cred.json"
+logger = logging.getLogger(__name__)
 
-os.environ['LANGSMITH_API_KEY'] = os.getenv("LANGSMITH_API_KEY")
-os.environ['LANGSMITH_PROJECT'] = os.getenv("LANGSMITH_PROJECT")
-os.environ['LANGSMITH_TRACING_V2'] = "true"
+load_environment()
+
 
 with open("models.yaml","r") as f:
     models = yaml.safe_load(f)
 
 test_models = models['TEST_MODELS']
 judge_models = models['JUDGE_MODELS']
-#-------------------------------------------------------------------------
-logger = logging.getLogger(__name__)
-#-------------------------------------------------------------------------
-LIMIT_SAMPLE_SIZE = 2
+
+
+#-------------------------------------------
+LIMIT_SAMPLE_SIZE = 1
 
 df = pd.read_csv("../data/examples.csv")
 df = df[:LIMIT_SAMPLE_SIZE]
@@ -76,3 +75,6 @@ for index,row in df.iterrows():
             judge_response['verdict'] = verdict
             judge_responses.append(judge_response)
             dump_in_jsonl(judge_response,"judge_responses.jsonl")
+
+
+

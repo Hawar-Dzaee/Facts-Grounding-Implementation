@@ -23,8 +23,7 @@ class LLM:
         logger.debug(f"Calling : {self.model} | Intention : {intention} ...") 
         try:
             response = init_chat_model(model=self.model,temperature=temperature)
-            response = response.invoke(text)
-            response = response.content
+            response = response.invoke(text).content
             logger.info(f"Successfully called : {self.model} | Intention : {intention}.")
 
             result = {
