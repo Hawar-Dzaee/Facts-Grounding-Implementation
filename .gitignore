@@ -3,3 +3,4 @@ langvenv
 vertex_ai_use_cred.json
 */__pycache__
 .pytest_cache
+Personal_NOTES.txt
