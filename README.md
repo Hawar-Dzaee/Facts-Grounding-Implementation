@@ -1,4 +1,4 @@
-# README
+# Facts Grounding implementation
 
 ## Overview
 This repository implements a framework for evaluating Language Models (LLMs) using judge models. The system consists of two main components:
