@@ -31,27 +31,6 @@ def load_environment():
     os.environ['LANGSMITH_TRACING_V2'] = "true"
 
 
-def fill_out_prompt(prompt_template: str, **kwargs) -> str:
-    """
-    Format a prompt template with {{variable}} style placeholders.
-    
-    Args:
-        prompt_template: Template string with {{variable}} placeholders
-        **kwargs: Variables to substitute into the template
-        
-    Returns:
-        Formatted prompt string
-    """
-    try:
-        for key, value in kwargs.items():
-            placeholder = f"{{{{{key}}}}}"
-            prompt_template = prompt_template.replace(placeholder, str(value))
-        return prompt_template
-    except Exception as e:
-        logger.error(f"Error formatting prompt template: {e}")
-        raise
-
-
 def dump_in_jsonl(data: Dict[str, Any], file_name: str) -> None:
     """
     Append data as a JSON line to the specified file.
