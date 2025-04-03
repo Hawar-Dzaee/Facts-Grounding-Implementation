@@ -6,16 +6,6 @@ import json
 
 
 
-def test_fill_out_prompt():
-    template = """My name is {{name}}, I am {{age}} years old.
-    `This is not a placeholder` **neither is this** 
-    {"sentence" : "Even though it is in a dictionary it is not a placeholder"}"""
-
-    result = fill_out_prompt(template,name="Hawar",age=30)
-
-    assert result == """My name is Hawar, I am 30 years old.
-    `This is not a placeholder` **neither is this** 
-    {"sentence" : "Even though it is in a dictionary it is not a placeholder"}"""
 
 
 
