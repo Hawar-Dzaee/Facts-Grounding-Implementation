@@ -1,4 +1,3 @@
-
 import logging
 import json
 from typing import List
@@ -9,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 from langchain.chat_models import init_chat_model
+from langchain.callbacks.tracers import LangChainTracer
+
 
 from utils import dump_in_jsonl
 
@@ -17,11 +18,14 @@ class LLM:
     def __init__(self,model:str):
         self.model = model
 
-    def call_llm(self,text:str,intention:str,temperature=0.0,**kwargs):
+    def call_llm(self,text:str,intention:str,temperature=0.0,tracer_project:str=None,**kwargs):
         logger.debug(f"Calling : {self.model} | Intention : {intention} ...") 
         try:
             response = init_chat_model(model=self.model,temperature=temperature)
-            response = response.invoke(text).content
+            response = response.invoke(
+                text,
+                config= {"callbacks": [LangChainTracer(project_name=tracer_project)]} if tracer_project else {}
+                ).content
             logger.info(f"Successfully called : {self.model} | Intention : {intention}.")
             result = {
                     f'{intention} model':self.model,
@@ -51,42 +55,58 @@ class JudgeLLM(LLM):
                        context_document:str,
                        test_model_response:str,
                        test_model :str,
+                       test_model_response_available:bool,
                        sample_id : str,
-                       evaluation_prompt_file_path
+                       evaluation_prompt_file_path:str,
+                       tracer_project:str=None
                        ):
         
         judge_responses =  []
-        for j in self.judges:
+        if test_model_response_available:
+            for j in self.judges:
+                judge_response = {
+                    'judge model':j.model,
+                    'sample id':sample_id,
+                    'judge model':j.model,
+                    "Encountered Problems": "Not applicable",
+                    'judge model response':"Not applicable",
+                    'verdict':"Not applicable"
+                }
 
-            if "anthropic" in j.model:
-                evaluation_method = "implicit_span_level"
-            else : 
-                evaluation_method = "json"
+        else : 
+            for j in self.judges:
 
-            judge_template = self.fetch_evaluation_prompt(evaluation_prompt_file_path,evaluation_method)
+                if "anthropic" in j.model:
+                    evaluation_method = "implicit_span_level"
+                else : 
+                    evaluation_method = "json"
 
-            filled_prompt = self.fill_out_prompt(
-                judge_template,
-                user_request = user_request,
-                context_document = context_document,
-                response = test_model_response
-            )
+                judge_template = self.fetch_evaluation_prompt(evaluation_prompt_file_path,evaluation_method)
 
-            judge_response = j.call_llm(
-                filled_prompt,
-                intention= "judge",
-                judged_model =  test_model,
-                sample_id = sample_id
-            )
-            
-            verdict = self.get_verdict(
-                judge_response["judge model response"],
-                evaluation_method
+                filled_prompt = self.fill_out_prompt(
+                    judge_template,
+                    user_request = user_request,
+                    context_document = context_document,
+                    response = test_model_response
                 )
-            
-            judge_response['verdict'] = verdict
-            judge_responses.append(judge_response)
-            dump_in_jsonl(judge_response,"judge_responses.jsonl")
+
+                judge_response = j.call_llm(
+                    filled_prompt,
+                    intention= "judge",
+                    judged_model =  test_model,
+                    sample_id = sample_id,
+                    tracer_project = tracer_project
+                )
+                
+                verdict = self.get_verdict(
+                    judge_response["judge model response"],
+                    evaluation_method
+                    )
+                
+                judge_response['verdict'] = verdict
+
+        judge_responses.append(judge_response)
+        dump_in_jsonl(judge_response,"judge_responses.jsonl")
 
         return judge_responses
             

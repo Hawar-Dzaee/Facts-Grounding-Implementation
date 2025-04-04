@@ -27,7 +27,7 @@ def load_environment():
     
     # LangSmith configuration
     os.environ['LANGSMITH_API_KEY'] = os.getenv("LANGSMITH_API_KEY", "")
-    os.environ['LANGSMITH_PROJECT'] = os.getenv("LANGSMITH_PROJECT", "")
+    # os.environ['LANGSMITH_PROJECT'] = os.getenv("LANGSMITH_PROJECT", "")
     os.environ['LANGSMITH_TRACING_V2'] = "true"
 
 

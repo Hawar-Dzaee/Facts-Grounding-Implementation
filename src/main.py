@@ -21,7 +21,9 @@ def process_sample(
         record:Dict[str,Any],
         test_models:List[str],
         judge_models:List[str],
-        evaluation_prompts_file_path:str
+        evaluation_prompts_file_path:str,
+        tracer_test_model:str=None,
+        tracer_judge_model:str=None,
 )->Tuple[List[Dict[str,Any]],List[Dict[str,Any]]]:
     
     test_responses = []
@@ -30,7 +32,12 @@ def process_sample(
     # STEP 1 : TEST RESPONSE
     for test_model in test_models:
         model_instance = LLM(test_model)
-        test_model_output  = model_instance.call_llm(record['full_prompt'],"test",sample_id = sample_id)
+        test_model_output  = model_instance.call_llm(
+            record['full_prompt'],
+            "test",
+            sample_id = sample_id,
+            tracer_project = tracer_test_model
+            )
         test_responses.append(test_model_output)
         dump_in_jsonl(test_model_output,"test_responses.jsonl")
 
@@ -41,9 +48,11 @@ def process_sample(
             user_request = record['user_request'],
             context_document= record['context_document'],
             test_model_response= test_model_output['test model response'],
+            test_model_response_available= test_model_output['Encountered Problems'],
+            evaluation_prompt_file_path=evaluation_prompts_file_path,
             test_model= test_model,
             sample_id=sample_id,
-            evaluation_prompt_file_path=evaluation_prompts_file_path
+            tracer_project = tracer_judge_model
         )
 
         judges_responses.append(judges_data)
@@ -59,8 +68,8 @@ def main():
 
     CONFIG_PATH = "models.yaml"
     DATA_PATH = "../data/examples.csv"
-    SAMPLE_SIZE_START = 2
-    SAMPLE_SIZE_END = 4
+    SAMPLE_SIZE_START = 0
+    SAMPLE_SIZE_END = 2
     EVALUATION_PROMPTS_PATH = "../data/evaluation_prompts.csv"
 
     with open(CONFIG_PATH,"r") as f:
@@ -91,7 +100,9 @@ def main():
             record = record,
             test_models = test_models,
             judge_models = judge_models,
-            evaluation_prompts_file_path = EVALUATION_PROMPTS_PATH
+            evaluation_prompts_file_path = EVALUATION_PROMPTS_PATH,
+            tracer_test_model = "test_model",
+            tracer_judge_model = "judge_model"
         )
 
         all_test_responses.extend(test_responses)

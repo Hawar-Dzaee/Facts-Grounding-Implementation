@@ -4,7 +4,10 @@ TEST_MODELS:
   # ADD YOUR MODELS HERE
 
 JUDGE_MODELS:
-  - anthropic:claude-3-5-sonnet-20240620
-  - google_vertexai:gemini-1.5-pro
+  # - google_vertexai:gemini-1.5-pro
+  # - anthropic:claude-3-5-sonnet-20240620
+  - anthropic:claude-3-7-sonnet-20250219
+  - google_vertexai:gemini-2.5-pro-exp-03-25
+  - deepseek-reasoner
   # ADD MORE JUDGE MODELS HERE
 
