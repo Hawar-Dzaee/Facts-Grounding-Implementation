@@ -11,7 +11,19 @@ logger = logging.getLogger(__name__)
 
 
 def load_environment():
-    """Load environment variables and configure settings."""
+    """Load and configure environment variables for the application.
+    
+    This function:
+    1. Loads environment variables from a .env file
+    2. Sets up Google Cloud credentials for Vertex AI
+    3. Configures LangSmith tracing for model evaluation
+    
+    The function ensures that necessary environment variables are available
+    for Google Cloud services and LangSmith integration, with appropriate
+    fallbacks and logging for missing configurations.
+    
+    Note: This expects a credentials file at '../vertex_ai_use_cred.json'
+    """
     load_dotenv()
     
     # Set required environment variables
@@ -27,7 +39,6 @@ def load_environment():
     
     # LangSmith configuration
     os.environ['LANGSMITH_API_KEY'] = os.getenv("LANGSMITH_API_KEY", "")
-    # os.environ['LANGSMITH_PROJECT'] = os.getenv("LANGSMITH_PROJECT", "")
     os.environ['LANGSMITH_TRACING_V2'] = "true"
 
 

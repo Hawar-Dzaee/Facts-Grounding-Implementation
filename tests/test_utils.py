@@ -1,15 +1,55 @@
 import pytest 
 import os
-from src.utils import fill_out_prompt,dump_in_jsonl
 import json
+from pathlib import Path
+from unittest.mock import patch, mock_open, MagicMock
+
+
+from src.utils import dump_in_jsonl,load_environment
 
 
 
 
 
+def test_load_environment_with_file_exists():
+    """Test load_environment when the credentials file exists."""
+    with patch('src.utils.load_dotenv'), \
+         patch('src.utils.Path.exists', return_value=True), \
+         patch('src.utils.Path.resolve', return_value=Path('../vertex_ai_use_cred.json')), \
+         patch.dict(os.environ, {}, clear=True):
+        
+        # Call the function
+        load_environment()
+        
+        # Verify environment variables were set correctly
+        assert os.environ.get('GOOGLE_PROJECT_ID') == ''
+        assert os.environ.get('GOOGLE_REGION') == ''
+        assert os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') == '../vertex_ai_use_cred.json'
+        assert os.environ.get('LANGSMITH_API_KEY') == ''
+        assert os.environ.get('LANGSMITH_TRACING_V2') == 'true'
 
 
+def test_load_environment_file_not_exists():
+    """Test load_environment when the credentials file does not exist."""
+    with patch('src.utils.load_dotenv'), \
+         patch('src.utils.Path.exists', return_value=False), \
+         patch('src.utils.Path.resolve', return_value=Path('../vertex_ai_use_cred.json')), \
+         patch('src.utils.logger.warning') as mock_warning, \
+         patch.dict(os.environ, {}, clear=True):
+        
+        # Call the function
+        load_environment()
+        
+        # Verify warning was logged
+        mock_warning.assert_called_once_with(
+            "Credentials file not found at ../vertex_ai_use_cred.json"
+        )
+        
+        # Verify environment variables were still set
+        assert os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') == '../vertex_ai_use_cred.json'
 
+
+#------------------------------------------------
 @pytest.fixture
 def sample_data():
     """Fixture providing sample JSON data."""
