@@ -118,6 +118,8 @@ class JudgeLLM(LLM):
                     'judge model response':"Not applicable",
                     'verdict':"Not applicable"
                 }
+                judge_responses.append(judge_response)
+                dump_in_jsonl(judge_response,"judge_responses.jsonl")
 
         else : 
             for j in self.judges:
@@ -150,9 +152,8 @@ class JudgeLLM(LLM):
                     )
                 
                 judge_response['verdict'] = verdict
-
-        judge_responses.append(judge_response)
-        dump_in_jsonl(judge_response,"judge_responses.jsonl")
+                judge_responses.append(judge_response)
+                dump_in_jsonl(judge_response,"judge_responses.jsonl")
 
         return judge_responses
             
@@ -222,7 +223,7 @@ class JudgeLLM(LLM):
             return verdict
         
         except Exception as e:
-            logger.error(f"Error : {e}")
+            logger.error(f"Error in get_verdict : {e}")
             verdict = None
 
 
