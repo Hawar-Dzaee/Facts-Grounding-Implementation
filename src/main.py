@@ -4,7 +4,7 @@ import yaml
 from typing import List,Dict,Any,Tuple
 import pandas as pd 
 
-from LM import LLM,JudgeLLM
+from pipeline import LLM,JudgeLLM
 from utils import load_environment,dump_in_jsonl
 
 
