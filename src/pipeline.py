@@ -2,7 +2,7 @@ import logging
 import json
 from typing import List
 import pandas as pd
-
+import re
 from langchain.chat_models import init_chat_model
 from langchain.callbacks.tracers import LangChainTracer
 
@@ -217,8 +217,12 @@ class JudgeLLM(LLM):
                 else : 
                     verdict = "Inaccurate"
             else :
-                if "Final Answer" in raw_output: 
-                    verdict = raw_output.split("Final Answer: ")[1]
+                match = re.search(r'Final Answer:\s*(Accurate|Inaccurate)', raw_output)
+                if match:
+                    verdict = match.group(1)  # Return just the "Accurate" or "Inaccurate" part
+                else:
+                    verdict = None
+
             logger.info(f"{verdict}")
             return verdict
         
