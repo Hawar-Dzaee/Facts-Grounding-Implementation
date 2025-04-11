@@ -69,7 +69,7 @@ def process_sample(
             user_request = record['user_request'],
             context_document= record['context_document'],
             test_model_response= test_model_output['test model response'],
-            test_model_response_available= test_model_output['Encountered Problems'],
+            skip_eval= test_model_output['Encountered Problems'],
             evaluation_prompt_file_path=evaluation_prompts_file_path,
             test_model= test_model,
             sample_id=sample_id,
