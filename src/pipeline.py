@@ -113,7 +113,7 @@ class JudgeLLM(LLM):
                 judge_response = {
                     'judge model':j.model,
                     'sample id':sample_id,
-                    'judge model':j.model,
+                    'judged model':test_model,
                     "Encountered Problems": "Not applicable",
                     'judge model response':"Not applicable",
                     'verdict':"Not applicable"
