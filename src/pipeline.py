@@ -57,7 +57,7 @@ class LLM:
 
     
 
-class JudgeLLM(LLM):
+class JudgeLLM:
     """Judge Language Model class for evaluating model responses.
 
     This class extends the base LLM class to provide functionality for evaluating
@@ -73,7 +73,7 @@ class JudgeLLM(LLM):
         fill_out_prompt: Populates the evaluation prompt template with specific content.
     """
     def __init__(self,judges:List[str]):
-        self.judges = [LLM(i) for i in judges]
+        self.judges = judges
 
     
     def calling_judges(self,
@@ -110,6 +110,7 @@ class JudgeLLM(LLM):
         judge_responses =  []
         if skip_eval:
             for j in self.judges:
+                j = LLM(j)
                 judge_response = {
                     'judge model':j.model,
                     'sample id':sample_id,
@@ -123,7 +124,7 @@ class JudgeLLM(LLM):
 
         else : 
             for j in self.judges:
-
+                j = LLM(j)
                 if "anthropic" in j.model:
                     evaluation_method = "implicit_span_level"
                 else : 
