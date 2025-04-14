@@ -3,7 +3,7 @@ import logging
 import yaml
 from typing import List,Dict,Any,Tuple
 import pandas as pd 
-
+import time
 from llm import LLM
 from judge_eval import JudgeLLM
 from utils import load_environment,dump_in_jsonl
@@ -113,7 +113,10 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.perf_counter()
     main()
+    end_time = time.perf_counter()
+    logger.info(f"Total time taken: {end_time - start_time} seconds")
 
 
 

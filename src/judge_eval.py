@@ -4,7 +4,7 @@ import json
 from typing import List
 import pandas as pd
 import re
-
+import concurrent.futures
 from llm import LLM
 from utils import dump_in_jsonl
 
@@ -78,6 +78,7 @@ class JudgeLLM:
 
         return judge_response
     
+    
     def calling_judges(self,
                         user_request:str,
                         context_document:str,
@@ -87,20 +88,17 @@ class JudgeLLM:
                         sample_id : str,
                         evaluation_prompt_file_path:str,
                         tracer_project:str=None):
-        judge_responses =  []
-        for j in self.judges:
-            judge_response = self.calling_judge(j,
-                                                user_request,
-                                                context_document,
-                                                test_model_response,
-                                                test_model,
-                                                skip_eval,
-                                                sample_id,
-                                                evaluation_prompt_file_path,
-                                                tracer_project)
-            judge_responses.append(judge_response)
-        return judge_responses
-
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.calling_judge,
+                                        j,
+                                        user_request,
+                                        context_document,
+                                        test_model_response,
+                                        test_model,
+                                        skip_eval,sample_id,evaluation_prompt_file_path,tracer_project) for j in self.judges]
+            results = list(concurrent.futures.as_completed(futures))
+            results = [result.result() for result in results]
+            return results
 
     def fetch_evaluation_prompt(self,evaluation_prompt_file_path:str,evaluation_method):
         """

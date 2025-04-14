@@ -1,7 +1,7 @@
 TEST_MODELS:
   - openai:gpt-3.5-turbo
   # - openai:gpt-4o
-  - ollama:llama3.2
+  # - ollama:llama3.2
   # - ollama:gemma3
   # ADD YOUR MODELS HERE
 
@@ -9,14 +9,15 @@ JUDGE_MODELS:
   # - anthropic:claude-3-5-sonnet-20240620
   - anthropic:claude-3-7-sonnet-20250219
 
-  # - openai:gpt-4o
+  - openai:gpt-4o
 
   # - google_vertexai:gemini-1.5-pro
-  # - google_vertexai:gemini-2.5-pro-exp-03-25
+  - google_vertexai:gemini-2.5-pro-exp-03-25
   # - ollama:gemma3
 
   # - deepseek-reasoner
   - ollama:llama3.2
+
 
   
   # ADD MORE JUDGE MODELS HERE
