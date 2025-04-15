@@ -2,7 +2,7 @@ import pytest
 import os
 import json
 from pathlib import Path
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch
 
 
 from src.utils import dump_in_jsonl,load_environment

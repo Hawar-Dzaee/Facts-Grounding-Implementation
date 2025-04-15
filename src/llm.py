@@ -3,7 +3,6 @@ import logging
 from langchain.chat_models import init_chat_model
 from langchain.callbacks.tracers import LangChainTracer
 
-from utils import dump_in_jsonl
 
 
 logging.basicConfig(level=logging.INFO)
