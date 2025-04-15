@@ -26,6 +26,23 @@ def process_sample(
         tracer_test_model:str=None,
         tracer_judge_model:str=None,
 )->Tuple[List[Dict[str,Any]],List[Dict[str,Any]]]:
+    """
+    Process a single sample through the evaluation pipeline.
+    
+    Args:
+        sample_id (int): Unique identifier for the sample
+        record (Dict[str,Any]): Dictionary containing the sample data including full_prompt, user_request, and context_document
+        test_models (List[str]): List of test model names to evaluate
+        judge_models (List[str]): List of judge model names to use for evaluation
+        evaluation_prompts_file_path (str): Path to the file containing evaluation prompts
+        tracer_test_model (str, optional): Project name for test model tracing. Defaults to None.
+        tracer_judge_model (str, optional): Project name for judge model tracing. Defaults to None.
+    
+    Returns:
+        Tuple[List[Dict[str,Any]],List[Dict[str,Any]]]: A tuple containing:
+            - List of test model responses
+            - List of judge model evaluations
+    """
     
     test_responses = []
     judges_responses = []
@@ -64,6 +81,19 @@ def process_sample(
 
 
 def main():
+    """
+    Main function to run the evaluation pipeline.
+    
+    This function:
+    1. Loads environment variables
+    2. Reads configuration from models.yaml
+    3. Loads sample data from examples.csv
+    4. Processes each sample through test and judge models
+    5. Collects and logs results
+    
+    The function uses a sample size range defined by SAMPLE_SIZE_START and SAMPLE_SIZE_END
+    to control the number of samples processed.
+    """
 
     load_environment()
 

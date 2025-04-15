@@ -1,4 +1,3 @@
-
 import logging
 import json
 from typing import List
@@ -15,8 +14,23 @@ logger = logging.getLogger(__name__)
 
 
 class JudgeLLM:
+    """
+    A class that manages multiple judge LLMs for evaluating model responses.
+    
+    This class handles the orchestration of multiple judge models to evaluate the accuracy
+    of responses from test models against given context and user requests.
+    
+    Attributes:
+        judges (List[str]): List of judge model names to be used for evaluation
+    """
 
     def __init__(self,judges:List[str]):
+        """
+        Initialize the JudgeLLM with a list of judge models.
+        
+        Args:
+            judges (List[str]): List of judge model names to be used for evaluation
+        """
         self.judges = judges
 
     
@@ -31,7 +45,23 @@ class JudgeLLM:
                        evaluation_prompt_file_path:str,
                        tracer_project:str=None
                        ):
-
+        """
+        Call a single judge model to evaluate a test model's response.
+        
+        Args:
+            judge_model (str): Name of the judge model to use
+            user_request (str): The original user request/query
+            context_document (str): The context document used for evaluation
+            test_model_response (str): The response from the test model to evaluate
+            test_model (str): Name of the test model being evaluated
+            skip_eval (bool): Whether to skip the evaluation
+            sample_id (str): Unique identifier for the evaluation sample
+            evaluation_prompt_file_path (str): Path to the file containing evaluation prompts
+            tracer_project (str, optional): Project name for tracing purposes
+            
+        Returns:
+            dict: Dictionary containing the judge's response and evaluation verdict
+        """
         j = LLM(judge_model)
 
         if skip_eval:
@@ -88,6 +118,22 @@ class JudgeLLM:
                         sample_id : str,
                         evaluation_prompt_file_path:str,
                         tracer_project:str=None):
+        """
+        Call multiple judge models in parallel to evaluate a test model's response.
+        
+        Args:
+            user_request (str): The original user request/query
+            context_document (str): The context document used for evaluation
+            test_model_response (str): The response from the test model to evaluate
+            test_model (str): Name of the test model being evaluated
+            skip_eval (bool): Whether to skip the evaluation
+            sample_id (str): Unique identifier for the evaluation sample
+            evaluation_prompt_file_path (str): Path to the file containing evaluation prompts
+            tracer_project (str, optional): Project name for tracing purposes
+            
+        Returns:
+            List[dict]: List of dictionaries containing each judge's response and evaluation verdict
+        """
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = [executor.submit(self.calling_judge,
                                         j,
